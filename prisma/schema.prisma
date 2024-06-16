@@ -1,0 +1,40 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  username   String
+  password   String
+  firstname  String
+  lastname   String
+  department String
+  img        String?
+  role       Role
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relation To Ot (One-To-Many)
+  otrecords Otrecord[]
+}
+
+// Relation.User
+model Otrecord {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  userid String   @db.ObjectId
+  date   DateTime
+  hours  String
+  // userId จะตรงกับ id ของ Model user
+  user   User     @relation(fields: [userid], references: [id])
+}
+
+enum Role {
+  owner
+  admin
+  user
+}
